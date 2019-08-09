@@ -6,7 +6,6 @@ const app = express()
 const port = 9000
 
 // Routes Location
-const testRoute = require("./api/routes/test");
 const routeCreator = require("./api/routes/routeCreator");
 
 // Midlewares
@@ -19,7 +18,6 @@ app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/swagger', (req, res) => res.send('Hello swagger!'))
 
 // Endpoint Routes
-app.use('/test', testRoute)
 app.use('/routeCreator', routeCreator)
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

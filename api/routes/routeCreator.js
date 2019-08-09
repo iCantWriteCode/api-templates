@@ -11,6 +11,7 @@ router.post('/add-new-route', (req, res, next) => {
 
     // Error Handling
     if(fs.existsSync(`./api/routes/${analyzedEndpoint[analyzedEndpoint.length - 1]}.js`)) return res.status(500).json({message:'Route Already Exists'})
+    // Check if req.body.response
 
     if(analyzedEndpoint.length === 1) {
         endpoint        = req.body.endpoint
@@ -24,14 +25,23 @@ router.post('/add-new-route', (req, res, next) => {
     let path1   = `./api/routes/${endpoint}`
     let path2   =  `const ${endpoint}Route = require("./api/routes/${endpoint}");`
     let path3   = `app.use('/${fullEndPoint}', ${endpoint}Route)`
+    let path4   = `./api/JSONDB`
+
+    const jsonDB_Data = JSON.stringify(req.body.response)
+    fs.writeFile(`${path4}/${endpoint}.json`, jsonDB_Data, (err) => {
+        if (err) throw err;
+        console.log ('Successfully saved new route');
+    });
 
     // TODO DA MOCK: Needs to send back the mock json 
     const newRoute_data = `
     const express = require("express");
     const router = express.Router();
+    const jsonDB = require("../JSONDB/${endpoint}.json");
 
     router.${req.body.method}('/', (req, res, next) => {
-        res.status(200).json({status: '${req.body.endpoint}'})
+        const data = jsonDB
+        res.status(200).json(data)
     })
 
     module.exports = router;
