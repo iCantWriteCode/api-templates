@@ -1,0 +1,6 @@
+.homepage {
+    padding: 1rem 0;
+    min-height: calc(100vh - 118px);
+    max-width: 1000px;
+    margin: 0 auto;
+}

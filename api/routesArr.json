@@ -1,1 +1,1 @@
-{"arr":[]}
+{"arr":[{"endpoint":"Mednext/queryClaimTaskByCriteria","method":"get","response":{"test":1,"test2":"test"}},{"endpoint":"Mednext/queryTasksByCriteria","method":"get","response":{"test":1,"test2":"test"}},{"endpoint":"Mednext/queryCustomerByCriteria","method":"post","response":{"test":1,"test2":"test"}},{"endpoint":"Mednext/queryStuffByCriteria","method":"post","description":"This route adds stuff","response":{"test":1,"test2":"test"}}]}
