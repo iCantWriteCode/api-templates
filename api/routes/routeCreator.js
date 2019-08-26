@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const fs = require('fs');
 
+const routesArray = require('../routesArr.json')
+
 router.post('/add-new-route', (req, res, next) => {
 
     const app_path  = './app.js'   
@@ -10,10 +12,20 @@ router.post('/add-new-route', (req, res, next) => {
     const analyzedEndpoint = req.body.endpoint.split('/')
 
     // Error Handling
-    if(fs.existsSync(`./api/routes/${analyzedEndpoint[analyzedEndpoint.length - 1]}.js`)) return res.status(500).json({message:'Route Already Exists'})
-    // Check if req.body.response
+    if (fs.existsSync(`./api/routes/${analyzedEndpoint[analyzedEndpoint.length - 1]}.js`)) return res.status(500).json({message:'Route Already Exists'})
 
-    if(analyzedEndpoint.length === 1) {
+    // Start: Add route to swagger
+    const routesArrayPath = './api/routesArr.json'
+
+    // Check if file exists
+    if (!fs.existsSync(routesArrayPath)) return res.status(500).json({message:'An Error Has occured'})
+    routesArray.arr.push(req.body)
+    fs.writeFile(routesArrayPath, JSON.stringify(routesArray), (err) => {
+        if (err) throw err;
+    });
+    // End: Add route to swagger
+
+    if (analyzedEndpoint.length === 1) {
         endpoint        = req.body.endpoint
         fullEndPoint    = req.body.endpoint
 
@@ -23,7 +35,7 @@ router.post('/add-new-route', (req, res, next) => {
     }
 
     let path1   = `./api/routes/${endpoint}`
-    let path2   =  `const ${endpoint}Route = require("./api/routes/${endpoint}");`
+    let path2   = `const ${endpoint}Route = require("./api/routes/${endpoint}");`
     let path3   = `app.use('/${fullEndPoint}', ${endpoint}Route)`
     let path4   = `./api/JSONDB`
 
