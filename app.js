@@ -6,13 +6,8 @@ const app = express()
 const port = 9000
 
 // Routes Location
-const queryStuffByCriteriaRoute = require("./api/routes/queryStuffByCriteria");
-const queryCustomerByCriteriaRoute = require("./api/routes/queryCustomerByCriteria");
-const queryTasksByCriteriaRoute = require("./api/routes/queryTasksByCriteria");
-const queryClaimTaskByCriteriaRoute = require("./api/routes/queryClaimTaskByCriteria");
 const getRoutes = require("./api/routes/getRoutes");
 const routeCreator = require("./api/routes/routeCreator");
-const testRoute = require("./api/routes/test");
 
 // Midlewares
 app.use(morgan("dev"));
@@ -35,20 +30,15 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/swagger', (req, res) => res.send('Hello swagger!'))
 
-let test = require('./api/routesArr')
 
-test.arr.forEach(element => {
-    app.use(`/${element.uri}`, eval(element.endpoint + 'Route'))
+let routes = require('./api/routesArr')
+routes.arr.forEach(element => {
+  let endpointArr = element.endpoint.split('/')
+  app.use(`${element.endpoint}`, eval(endpointArr[endpointArr.length -1] + 'Route'))
 })
 
 // Endpoint Routes
-app.use('/Mednext/queryStuffByCriteria', queryStuffByCriteriaRoute)
-app.use('/Mednext/queryCustomerByCriteria', queryCustomerByCriteriaRoute)
-app.use('/Mednext/queryTasksByCriteria', queryTasksByCriteriaRoute)
-app.use('/Mednext/queryClaimTaskByCriteria', queryClaimTaskByCriteriaRoute)
 app.use('/getRoutes', getRoutes)
 app.use('/routeCreator', routeCreator)
-// app.use('/testRoute', testRoute)
-
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
