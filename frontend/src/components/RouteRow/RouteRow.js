@@ -1,10 +1,7 @@
 import React from 'react'
-import { Row, Col } from 'antd'
-
 import './RoutesRow.css'
 
 const RouteRow = (props) => {
-    console.warn(props.data);
     
     return (
         <div className={`endpoint-row endpoint-row--${props.data.method}`}>

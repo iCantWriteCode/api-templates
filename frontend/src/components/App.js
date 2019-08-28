@@ -1,5 +1,4 @@
-import React, {useState, useEffect } from 'react'
-import axios from 'axios';
+import React from 'react'
 import 'antd/dist/antd.css';
 
 import Footer from './Footer/Footer'

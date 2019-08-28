@@ -7,6 +7,8 @@ import './Homepage.css'
 const Homepage = () => {
     
     const [routes, setRoutes] = useState({routes:[]});
+    const [test, setTest] = useState({test:false});
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,6 +25,7 @@ const Homepage = () => {
               {routes.routes.map((item, i) => (
                 <RouteRow key={i} data={item}  />
             ))}
+            <div>test: {test.test ? "true" : "false"}</div>
         </div>
     )
 }
