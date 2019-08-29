@@ -1,31 +1,13 @@
-import React, {useState, useEffect } from 'react'
-import axios from 'axios';
+import React from 'react'
 
-import RouteRow from '../../components/RouteRow/RouteRow'
+import RoutesList from '../../components/RoutesList/RoutesList'
 
 import './Homepage.css'
+
 const Homepage = () => {
-    
-    const [routes, setRoutes] = useState({routes:[]});
-    const [test, setTest] = useState({test:false});
-
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const result = await axios(
-                'http://localhost:9000/getRoutes',
-            );
-            setRoutes(result.data)
-        };
-        fetchData();
-    }, []);
-
     return (
         <div className='homepage'>
-              {routes.routes.map((item, i) => (
-                <RouteRow key={i} data={item}  />
-            ))}
-            <div>test: {test.test ? "true" : "false"}</div>
+            <RoutesList />
         </div>
     )
 }
