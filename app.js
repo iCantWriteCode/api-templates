@@ -30,11 +30,10 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/swagger', (req, res) => res.send('Hello swagger!'))
 
-
+// Using all route dynamically. This for fewer lines
 let routes = require('./api/routesArr')
 routes.arr.forEach(element => {
-  let endpointArr = element.endpoint.split('/')
-  app.use(`${element.endpoint}`, eval(endpointArr[endpointArr.length -1] + 'Route'))
+  app.use(`${element.endpoint}`, eval(element.uniqueName))
 })
 
 // Endpoint Routes
