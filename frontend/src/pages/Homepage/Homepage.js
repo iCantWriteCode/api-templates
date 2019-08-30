@@ -4,10 +4,11 @@ import RoutesList from '../../components/RoutesList/RoutesList'
 
 import './Homepage.css'
 
-const Homepage = () => {
+const Homepage = (props) => {
+    
     return (
         <div className='homepage'>
-            <RoutesList />
+            <RoutesList routes={props.routes} />
         </div>
     )
 }

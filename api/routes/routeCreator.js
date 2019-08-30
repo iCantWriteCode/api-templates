@@ -1,8 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const fs = require('fs');
-const uniqid = require('uniqid');
-const routesArray = require('../routesArr.json')
+const express       = require("express");
+const router        = express.Router();
+const fs            = require('fs');
+const uniqid        = require('uniqid');
+const routesArray   = require('../routesArr.json')
 
 router.post('/add-new-route', (req, res, next) => {
 
@@ -16,13 +16,13 @@ router.post('/add-new-route', (req, res, next) => {
         if(element === '') splittedEndpoint.splice(index, 1)
     });
     
-    // Loops through array and create the folder structure and the file
-    let Routes_Path = "./api/routes/"
-    let JSONDB_Path = "./api/JSONDB/"
+    // Paths for the files
+    let Routes_Path                 = "./api/routes/"
+    let JSONDB_Path                 = "./api/JSONDB/"
     let JSONDB_Path_for_route_part1 = '../'
     let JSONDB_Path_for_route_part2 = ''
 
-
+    // Loops through array and create the folder structure and the file
     splittedEndpoint.forEach((element,index) => {
         if (index < splittedEndpoint.length - 1) {
 
@@ -40,9 +40,13 @@ router.post('/add-new-route', (req, res, next) => {
 
         } else {
             JSONDB_Path_for_route_part2 += element + '.json'
-            // JSONDB_Path_for_route += '../JSONDB/Mednext/Common/Proxy/Rest/V1/ClaimDS/queryCountryInformation2.json';
+            
             // Checks if the file exists, before creating one
-            if (fs.existsSync(`${Routes_Path}${element}.js`)) return res.status(500).json({message:"This Route Already Exists"})
+            if (fs.existsSync(`${Routes_Path}${element}.js`)) {
+                console.log('?');
+                
+                return res.status(500).json({message:"This Route Already Exists"})
+            }
 
             // Creates Mock Response
             const jsonDB_Data = JSON.stringify(req.body.response)
@@ -67,7 +71,7 @@ router.post('/add-new-route', (req, res, next) => {
 
             fs.writeFile(`${Routes_Path}${element}.js`, newRoute_data, (err) => {
                 if (err) throw err;
-                return res.status(500).json({message:"New Route successfully created"})
+                return res.status(200).json({message:"New Route successfully created"})
             });
 
             // 2. Update app.js

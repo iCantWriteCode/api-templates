@@ -24,14 +24,14 @@ class Navbar extends React.Component  {
             axios
                 .post(`http://localhost:9000/routeCreator/add-new-route`, { ...values })
                 .then((res) => {
-                    console.log(res)
+                    this.props.getRoutes()
                 })
                 .catch(err => {
                     console.warn(err);
                 })
 		});
 	};
-
+    
 
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -45,73 +45,117 @@ class Navbar extends React.Component  {
                     <Col span={8} style={{textAlign:'right'}}>Contact Author</Col>
                 </Row>
                 <Modal
-                    title="Basic Modal"
+                    title="Create New Route"
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
+                    className="route-modal"
+                    width={900}
+                    footer={null}
                 >
                     <Form className="login-form" onSubmit={this.handleRegister}>
-                        <Form.Item label="Endpoint">
-                            {getFieldDecorator('endpoint', {
-                                rules: [ { required: true, message: 'Please provide an endpoint!' } ]
-                            })(
-                                <Input
-                                    size="large"
-                                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                    placeholder="/URI/endpoint"
-                                />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="Method">
-                            {getFieldDecorator('method', {
-                                rules: [ { required: true, message: 'Please select a method!' } ]
-                            })(
-                                <Select
-                                    size="large"
-                                    placeholder="Method"
-                                    style={{ display: 'block' }}
-                                    onChange={this.handleChange}
-                                >
-                                    <Option value="post">Post</Option>
-                                    <Option value="get">Get</Option>
-                                </Select>
-                            )}
-                        </Form.Item>
-                        <Form.Item label="Version">
-                            {getFieldDecorator('version')(
-                                <Input
-                                    size="large"
-                                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                    placeholder="v1"
-                                />
-                            )} 
-                        </Form.Item>
-                        <Form.Item label="Description">
-                            {getFieldDecorator('description')(
-                                <Input
-                                    size="large"
-                                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                    placeholder="Claim Presentation Service"
-                                />
-                            )} 
-                        </Form.Item>
-                        <Form.Item label="Response">
-                            {getFieldDecorator('response')(
-                                <TextArea 
-                                    rows={4}
-                                    
-                                    placeholder="{ 
-                                        'test':1,
-                                        'test2':'test'
-                                        }"
-                                />
-                            )} 
-                        </Form.Item>
-                        <Form.Item>
-                            <Button size="large" type="primary" htmlType="submit" className="login-form-button">
-                                Register
-                            </Button>
-                        </Form.Item>
+                        <Row gutter={16}>
+                            <Col span={24}>
+                                <Form.Item label="Endpoint">
+                                    {getFieldDecorator('endpoint', {
+                                        rules: [ { required: true, message: 'Please provide an endpoint!' } ]
+                                    })(
+                                        <Input
+                                            size="large"
+                                            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                            placeholder="/URI/endpoint"
+                                        />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="Method">
+                                    {getFieldDecorator('method', {
+                                        rules: [ { required: true, message: 'Please select a method!' } ]
+                                    })(
+                                        <Select
+                                            size="large"
+                                            placeholder="Method"
+                                            style={{ display: 'block' }}
+                                            onChange={this.handleChange}
+                                        >
+                                            <Option value="post">Post</Option>
+                                            <Option value="get">Get</Option>
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="Version">
+                                    {getFieldDecorator('version', {
+                                        rules: [ { required: true, message: 'Please provide a version!' } ]
+                                    })(
+                                        <Input
+                                            size="large"
+                                            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                            placeholder="v1"
+                                        />
+                                    )} 
+                                </Form.Item>        
+                            </Col>
+                            <Col span={12}>
+                            <Form.Item label="Module">
+                                {getFieldDecorator('module', {
+                                        rules: [ { required: true, message: 'Please provide a module!' } ]
+                                })(
+                                    <Input
+                                        size="large"
+                                        prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                        placeholder="Common"
+                                    />
+                                )} 
+                            </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="Category">
+                                    {getFieldDecorator('category', {
+                                        rules: [ { required: true, message: 'Please provide a category!' } ]
+                                    })(
+                                        <Input
+                                            size="large"
+                                            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                            placeholder="ClaimPZS"
+                                        />
+                                    )} 
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item label="Description">
+                                    {getFieldDecorator('description')(
+                                        <Input
+                                            size="large"
+                                            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                            placeholder="Claim Presentation Service"
+                                        />
+                                    )} 
+                                </Form.Item>
+                            </Col>        
+                            <Col span={24}>
+                                <Form.Item label="Response">
+                                    {getFieldDecorator('response')(
+                                        <TextArea 
+                                            rows={4}
+                                            placeholder="{ 
+                                                'test':1,
+                                                'test2':'test'
+                                                }"
+                                        />
+                                    )} 
+                                </Form.Item>
+                            </Col>  
+                            <Col span={24}>
+                                <Form.Item>
+                                    <Button block size="large" type="primary" htmlType="submit" className="login-form-button" style={{marginTop: '1rem'}}>
+                                        Create Route!
+                                    </Button>
+                                </Form.Item>
+                            </Col>
+                        </Row>
 					</Form>
                 </Modal>
             </Fragment>

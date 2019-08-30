@@ -1,31 +1,39 @@
 import React, { Fragment } from 'react'
 
-import axios from 'axios';
-
-
 import RouteRow from '../../components/RouteRow/RouteRow'
-
 
 class RoutesList extends React.Component {
 
     state = {
-        routes:[]
+        routes: []
     }
 
-    componentDidMount() {
-        this.getRoutes()
+    constructRoutes = () => {
+        console.log('constructRoutes');
+
+        this.state.routes.forEach(element => {
+            console.log(element.endpoint);
+        })
+        
     }
 
-    getRoutes = () =>  {
-        axios
-            .get(`http://localhost:9000/getRoutes`)
-            .then(res => { 
-                this.setState({ routes: res.data.routes })
-            })
-            .catch(err => {  console.warn(err) })
-    }
+    componentWillReceiveProps(nextProps) {
+        console.log('componentWillReceiveProps');
+        console.log('nextProps', nextProps);
+        this.setState({routes: nextProps.routes})
+        this.constructRoutes()
+
+        // You don't have to do this check first, but it can help prevent an unneeded render
+        // if (nextProps.startTime !== this.state.startTime) {
+        //   this.setState({ startTime: nextProps.startTime });
+        // }
+      }
 
     render() {
+        // console.log(this.state);
+        
+        console.log('RoutesList.js', this.props.routes);
+        
         return (
             <Fragment>
                  { this.state.routes.map((item, i) => (

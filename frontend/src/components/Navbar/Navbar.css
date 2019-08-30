@@ -3,3 +3,6 @@
     padding:1rem 1rem; 
     border-bottom: 1px solid #ccc;
 }
+.route-modal .ant-form-item {
+    margin-bottom: 0
+}
