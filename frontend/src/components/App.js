@@ -7,6 +7,8 @@ import Footer from './Footer/Footer'
 import Navbar from './Navbar/Navbar'
 import Homepage from '../pages/Homepage/Homepage'
 
+import '../styles/bootstrap.css'
+
 const App = () => {
 
     const [routes, setRoutes] = useState([]);

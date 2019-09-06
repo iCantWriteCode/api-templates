@@ -1,3 +1,5 @@
+// @ts-check
+
 const express       = require("express");
 const router        = express.Router();
 const fs            = require('fs');
@@ -7,7 +9,7 @@ const routesArray   = require('../routesArr.json')
 router.post('/add-new-route', (req, res, next) => {
 
     let endpoint = req.body.endpoint
-
+    req.body.id = uniqid()
     // Splitting Endpoint to Array
     let splittedEndpoint = endpoint.split('/')
 
@@ -45,7 +47,7 @@ router.post('/add-new-route', (req, res, next) => {
             if (fs.existsSync(`${Routes_Path}${element}.js`)) {
                 console.log('?');
                 
-                return res.status(500).json({message:"This Route Already Exists"})
+                return res.status(400).json({message:"This Route Already Exists"})
             }
 
             // Creates Mock Response
@@ -56,18 +58,20 @@ router.post('/add-new-route', (req, res, next) => {
             });
 
             // Creates Route
-            const newRoute_data = `
-            const express = require("express");
-            const router = express.Router();
-            const jsonDB = require("${JSONDB_Path_for_route_part1}JSONDB/${JSONDB_Path_for_route_part2}");
+            const newRoute_data =
+`const express = require("express");
+const router = express.Router();
+const jsonDB = require("${JSONDB_Path_for_route_part1}JSONDB/${JSONDB_Path_for_route_part2}");
 
-            router.${req.body.method}('/', (req, res, next) => {
-                const data = jsonDB
-                res.status(200).json(data)
-            })
+router.${req.body.method}('/', (req, res, next) => {
+    // Default Route
+    const data = jsonDB
+    res.status(200).json(data)
+    // End Of Default Route
+})
 
-            module.exports = router;
-            `
+module.exports = router;
+`
 
             fs.writeFile(`${Routes_Path}${element}.js`, newRoute_data, (err) => {
                 if (err) throw err;
@@ -115,97 +119,76 @@ router.post('/add-new-route', (req, res, next) => {
 
         }
     })
-    
-
-
-    // res.status(200).json({message:"add-new-route"})
-
-    // ========================================== //
-    //         OLD IMPLEMENTATION BELOW
-    // ========================================== //
-    // const app_path          = './app.js'   
-    // const analyzedEndpoint  = req.body.endpoint.split('/')
-    // const routesArrayPath   = './api/routesArr.json'
-    // let fullEndPoint, endpoint
-
-    // if (analyzedEndpoint.length === 1) {
-    //     endpoint        = req.body.endpoint
-    //     fullEndPoint    = req.body.endpoint
-    // } else {
-    //     fullEndPoint    = req.body.endpoint
-    //     endpoint        = analyzedEndpoint[analyzedEndpoint.length - 1]
-    // }
-
-    // // Handling Duplicated Filenames and Routes
-    // let routeExists = false
-    // routesArray.arr.forEach(route => {
-    //     if (route.endpoint === req.body.endpoint) return routeExists = true
-    //     if (fs.existsSync(`./api/routes/${analyzedEndpoint[analyzedEndpoint.length - 1]}.js`))  endpoint = endpoint + uniqid()
-    // })
-    // if (routeExists) return res.status(500).json({message:'Route Already Exists'})
-
-    // let path1   = `./api/routes/${endpoint}`
-    // let path2   = `const ${endpoint}Route = require("./api/routes/${endpoint}");`
-    // let path3   = `app.use('${fullEndPoint}', ${endpoint}Route)`
-    // let path4   = `./api/JSONDB`
-    
-    // // 
-    // routesArray.arr.push(req.body)
-    // fs.writeFile(routesArrayPath, JSON.stringify(routesArray), (err) => {
-    //     if (err) throw err;
-    // });
-
-    // const jsonDB_Data = JSON.stringify(req.body.response)
-    // fs.writeFile(`${path4}/${endpoint}.json`, jsonDB_Data, (err) => {
-    //     if (err) throw err;
-    //     console.log ('Successfully saved new route');
-    // });
-
-    // const newRoute_data = `
-    // const express = require("express");
-    // const router = express.Router();
-    // const jsonDB = require("../JSONDB/${endpoint}.json");
-
-    // router.${req.body.method}('/', (req, res, next) => {
-    //     const data = jsonDB
-    //     res.status(200).json(data)
-    // })
-
-    // module.exports = router;
-    // `
-
-    // // 1. Create new route
-    // fs.writeFile(`${path1}.js`, newRoute_data, (err) => {
-    //     if (err) throw err;
-    //     console.log ('Successfully saved new route');
-    // });
-
-    // // 2. Update app.js
-    // fs.readFile(app_path, function read(err, data) { 
-
-    //     if(err) throw new Error(err)
-
-    //     // Converting file to an Array
-    //     let dataArray = data.toString().split('\n');
-
-    //     // 1. Folder Routes
-    //     let index1          = dataArray.indexOf('// Routes Location\r') + 1
-    //     dataArray.splice(index1, 0, path2) 
-
-    //     // 2. F.E routes
-    //     let index2 = dataArray.indexOf('// Endpoint Routes\r') + 1
-    //     dataArray.splice(index2, 0, path3)
-        
-    //     // 3. Update the file
-    //     const updatedData = dataArray.join('\n');
-    //     fs.writeFile(app_path, updatedData, (err) => {
-    //         if (err) throw err;
-    //         res.status(200).json({status: 'Successfully updated the file data'})
-
-    //     });
-
-    // })
 
 })
 
+router.post('/add-rules-to-route', (req, res, next) => {
+
+    let routeOutcomes               = ' '
+    let JSONDBOutcomes              = ' '
+    let JSONDB_Path_for_route_part1 = ''
+    let JSONDB_Path_for_route_part2 = ''
+    let splitedEndpointArr          = req.body.data.endpoint.split('/')
+
+    splitedEndpointArr.forEach((element, index) => { 
+        if (index !== splitedEndpointArr.length - 1) JSONDB_Path_for_route_part1 += '../'
+    })
+    JSONDB_Path_for_route_part1 += 'JSONDB'
+
+
+    let defaultDB = `const jsonDB = require('${JSONDB_Path_for_route_part1}${req.body.data.endpoint}')`
+    let defaultRouteLogic = `
+    else {
+        const data = jsonDB
+        res.status(200).json(data)
+    }
+    `
+
+    req.body.logic.forEach(logic => {
+
+
+        JSONDB_Path_for_route_part2 = ''
+        splitedEndpointArr.forEach((element, index) => { 
+            if (index !== splitedEndpointArr.length -1 ) JSONDB_Path_for_route_part2 += element + '/';
+            else JSONDB_Path_for_route_part2 += element + logic.requestVariable + logic.value + '.json'
+        })
+       
+        routeOutcomes += `
+            ${logic.active ? '' : '//'} if (req.body.${logic.requestVariable} ${logic.operator === '=' ? '===' : '!=='} '${logic.value}' ) {
+                ${logic.active ? '' : '//'} const data = jsonDB${logic.requestVariable}${logic.value}
+                ${logic.active ? '' : '//'} return res.status(200).json(data)
+            ${logic.active ? '' : '//'} }
+            `
+        JSONDBOutcomes += `const jsonDB${logic.requestVariable}${logic.value} = require("${JSONDB_Path_for_route_part1}${JSONDB_Path_for_route_part2}") \n`
+
+        if (!fs.existsSync(`./api/JSONDB/${JSONDB_Path_for_route_part2}`)) {
+            fs.writeFile(`./api/JSONDB/${JSONDB_Path_for_route_part2}`, logic.response, (err) => {
+                if (err) return res.status(400).json({message:"This file already exists"})
+            });
+        }
+
+    })
+
+    const newFile = 
+`
+const express = require("express");
+const router = express.Router();
+${defaultDB}
+${JSONDBOutcomes}
+router.post('/', (req, res, next) => {
+    ${routeOutcomes}
+    ${defaultRouteLogic}
+})
+
 module.exports = router;
+    
+`
+    
+    fs.writeFile(`./api/routes${req.body.data.endpoint}.js`, newFile, (err) => {
+        if (err) return console.log(err)
+        else  res.status(200).json({message: 'New rules added successfully'})
+    });
+
+})
+
+module.exports = router; 

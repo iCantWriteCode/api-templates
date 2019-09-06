@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react'
-import { Row, Col, Button, Modal, Form, Icon, Input , Select } from 'antd';
+import { Row, Col, Button, Modal, Form, Icon, Input , Select, notification  } from 'antd';
 import axios from 'axios';
 
 import './Navbar.css'
@@ -14,7 +14,9 @@ class Navbar extends React.Component  {
     handleCancel = e =>  this.setState({visible: false}) 
 
     handleRegister = e => {
-		e.preventDefault();
+
+        e.preventDefault();
+        
 		this.props.form.validateFields((err, values) => {
             if (err) return console.error('err',err)
 
@@ -25,9 +27,29 @@ class Navbar extends React.Component  {
                 .post(`http://localhost:9000/routeCreator/add-new-route`, { ...values })
                 .then((res) => {
                     this.props.getRoutes()
+                    console.log(res.data)
+                    notification.success({
+                        message: 'Notification Title',
+                        description:
+                          'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+                        // duration: 0,
+                        style: {
+                            borderLeft: '7px solid rgb(98, 175, 60)'
+                        }
+                    });
+                    setTimeout(() => this.setState({visible: false}), 4500)
                 })
                 .catch(err => {
-                    console.warn(err);
+                    console.warn(err.response.data.message);
+                    notification.error({
+                        message: 'Notification Title',
+                        description:
+                          'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+                        // duration: 0,
+                        style: {
+                            borderLeft: '7px solid #f7434d'
+                        }
+                      });
                 })
 		});
 	};
@@ -52,6 +74,7 @@ class Navbar extends React.Component  {
                     className="route-modal"
                     width={900}
                     footer={null}
+                    destroyOnClose={true}
                 >
                     <Form className="login-form" onSubmit={this.handleRegister}>
                         <Row gutter={16}>
