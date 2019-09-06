@@ -14,7 +14,8 @@ class RouteRow extends React.Component {
         visible: false,
         logic: [
             { active: true, requestVariable:'', operator: '', value:'', response: '' }
-        ]
+        ],
+        responsesArray: []
     }
     expand = () => {
         this.setState({ expanded: !this.state.expanded })
@@ -87,7 +88,23 @@ class RouteRow extends React.Component {
         this.setState({logic: fields})
     }
 
+    onChange = (checkedValues) => {
+        console.log('checked = ', checkedValues);
+    }
+
+    showResponses = value => {
+        let tempArr = this.state.responsesArray
+        let index = tempArr.indexOf(value)
+
+        if (index === -1 ) tempArr.push(value) 
+        else tempArr.splice(index, 1)
+
+        this.setState({ responsesArray: tempArr  })
+    }
+
     render() {
+        console.log(this.props.data);
+
         return (
             <Fragment>
                 <div className={`endpoint-row endpoint-row--${this.props.data.method} ${this.state.expanded ? 'expanded' : ''}`}>
@@ -100,12 +117,42 @@ class RouteRow extends React.Component {
                     { this.state.expanded ? 
                         <div>
                             <br/>
-                            <Button type="primary" icon="plus" onClick={this.showModal}>
-                                Add Response Logic
-                            </Button>
-                            <pre>
-                                {JSON.stringify(this.props.data.response, null, 2)}
-                            </pre>    
+                            <br/>
+                            <Button type="primary" icon="plus" onClick={this.showModal}> Add Response Logic </Button>
+                            <br/>
+                            <br/>
+                            <h3>Posible Requests: </h3>
+
+                            {/* Handle all the responses */}
+                            { this.props.data.possibleResponses.map((response, index) => {
+                                return (
+                                    <Button 
+                                        size='large' 
+                                        key={index} 
+                                        style={ this.state.responsesArray.includes(response.condition) ? {backgroundColor: 'skyblue'} : {backgroundColor: 'white'} }
+                                        onClick={() => this.showResponses(response.condition)}
+                                    >
+                                        {response.condition}
+                                    </Button>
+                                )
+                            })}
+                            <hr/>
+                            { this.props.data.possibleResponses.map((response, index) => { 
+                                if (this.state.responsesArray.includes(response.condition) ) {
+                                    return (
+                                        <div key={index}> 
+
+                                            <h3>{response.condition} Response: </h3>
+                                            <pre>
+                                                {JSON.stringify(response.response, null, 2)}
+                                            </pre>   
+
+                                        </div>
+                                    )
+                                } 
+                            })}
+
+                             
                         </div> 
                     : null }
                     

@@ -90,7 +90,7 @@ module.exports = router;
             req.body.possibleResponses = [
                 { 
                     "defalt":true,
-                    "condition":null,
+                    "condition":'default',
                     "response":req.body.response
                 }
             ]
@@ -158,6 +158,7 @@ router.post('/add-rules-to-route', (req, res, next) => {
     routesArray.arr.forEach((element, i) => {
         if (element.id === req.body.data.id) routeIndex = i
     })
+    let tempRoutesArray = []
 
     req.body.logic.forEach(logic => {
 
@@ -182,18 +183,20 @@ router.post('/add-rules-to-route', (req, res, next) => {
             });
         }
 
+    })
+
+    routesArray.arr[routeIndex].possibleResponses =[ routesArray.arr[routeIndex].possibleResponses[0]]
+    req.body.logic.forEach(logic => { 
         routesArray.arr[routeIndex].possibleResponses.push({
             "defalt":false,
             "condition": `if (req.body.${logic.requestVariable} ${logic.operator === '=' ? '===' : '!=='} '${logic.value}'`,
             "response":logic.response
         })
-        // console.log('routesArray',routesArray);
-        const routesArrayPath   = './api/routesArr.json'
-        fs.writeFile(routesArrayPath, JSON.stringify(routesArray), (err) => {
-            if (err) throw err;
-        });
-
     })
+    const routesArrayPath   = './api/routesArr.json'
+    fs.writeFile(routesArrayPath, JSON.stringify(routesArray), (err) => {
+        if (err) throw err;
+    });
 
     const newFile = 
 `
