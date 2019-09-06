@@ -86,7 +86,17 @@ module.exports = router;
             // Updating the routeArr File in order to get the data of the routes
             req.body.uniqueName = uniqueEndpointRouteVar
             const routesArrayPath   = './api/routesArr.json'
+            console.log(req.body);
+            req.body.possibleResponses = [
+                { 
+                    "defalt":true,
+                    "condition":null,
+                    "response":req.body.response
+                }
+            ]
+            delete req.body.response
             routesArray.arr.push(req.body)
+
             fs.writeFile(routesArrayPath, JSON.stringify(routesArray), (err) => {
                 if (err) throw err;
             });
@@ -144,6 +154,11 @@ router.post('/add-rules-to-route', (req, res, next) => {
     }
     `
 
+    let routeIndex = 0 
+    routesArray.arr.forEach((element, i) => {
+        if (element.id === req.body.data.id) routeIndex = i
+    })
+
     req.body.logic.forEach(logic => {
 
 
@@ -167,6 +182,17 @@ router.post('/add-rules-to-route', (req, res, next) => {
             });
         }
 
+        routesArray.arr[routeIndex].possibleResponses.push({
+            "defalt":false,
+            "condition": `if (req.body.${logic.requestVariable} ${logic.operator === '=' ? '===' : '!=='} '${logic.value}'`,
+            "response":logic.response
+        })
+        // console.log('routesArray',routesArray);
+        const routesArrayPath   = './api/routesArr.json'
+        fs.writeFile(routesArrayPath, JSON.stringify(routesArray), (err) => {
+            if (err) throw err;
+        });
+
     })
 
     const newFile = 
@@ -183,6 +209,17 @@ router.post('/', (req, res, next) => {
 module.exports = router;
     
 `
+        
+        // console.log(routeIndex);
+
+        // req.body.logic.forEach((element, i) => {
+            
+        // })
+
+        
+
+    // console.log(routesArray)
+    
     
     fs.writeFile(`./api/routes${req.body.data.endpoint}.js`, newFile, (err) => {
         if (err) return console.log(err)
